@@ -24,8 +24,6 @@ import org.apache.kafka.common.record.SimpleRecord;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -36,14 +34,14 @@ public class ReplicaVerificationToolTest {
     @Test
     void testReplicaBufferVerifyChecksum() {
         StringBuilder sb = new StringBuilder();
-        final Map<TopicPartition, Integer> expectedReplicasPerTopicAndPartition = new HashMap<TopicPartition, Integer>() {{
-                put(new TopicPartition("a", 0), 3);
-                put(new TopicPartition("a", 1), 3);
-                put(new TopicPartition("b", 0), 2);
-            }};
+        final Map<TopicPartition, Integer> expectedReplicasPerTopicAndPartition = Map.of(
+                new TopicPartition("a", 0), 3,
+                new TopicPartition("a", 1), 3,
+                new TopicPartition("b", 0), 2
+        );
 
         ReplicaVerificationTool.ReplicaBuffer replicaBuffer =
-            new ReplicaVerificationTool.ReplicaBuffer(expectedReplicasPerTopicAndPartition, Collections.emptyMap(), 2, 0);
+            new ReplicaVerificationTool.ReplicaBuffer(expectedReplicasPerTopicAndPartition, Map.of(), 2, 0);
         expectedReplicasPerTopicAndPartition.forEach((tp, numReplicas) -> {
             IntStream.range(0, numReplicas).forEach(replicaId -> {
                 SimpleRecord[] records = IntStream.rangeClosed(0, 5)

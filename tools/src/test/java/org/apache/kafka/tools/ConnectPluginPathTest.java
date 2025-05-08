@@ -409,7 +409,7 @@ public class ConnectPluginPathTest {
             if (loadable == null || loadable || compatible == null || compatible) {
                 assertTrue(table.containsKey(plugin.className()), "Plugin " + plugin.className() + " does not appear in list output");
                 for (String[] row : table.get(plugin.className())) {
-                    log.info("row" + Arrays.toString(row));
+                    log.info("row{}", Arrays.toString(row));
                     if (loadable != null) {
                         assertEquals(loadable, Boolean.parseBoolean(row[LOADABLE_COL]), "Plugin loadable column for " + plugin.className() + " incorrect");
                     }

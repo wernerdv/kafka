@@ -37,8 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.SplittableRandom;
@@ -94,7 +92,7 @@ public class ProducerPerformanceTest {
 
     @Test
     public void testReadProps() throws Exception {
-        List<String> producerProps = Collections.singletonList("bootstrap.servers=localhost:9000");
+        List<String> producerProps = List.of("bootstrap.servers=localhost:9000");
         File producerConfig = createTempFile("acks=1");
 
         Properties prop = ProducerPerformance.readProps(producerProps, producerConfig.getAbsolutePath());
@@ -312,8 +310,7 @@ public class ProducerPerformanceTest {
         Integer recordSize = null;
         String inputString = "Hello Kafka";
         byte[] byteArray = inputString.getBytes(StandardCharsets.UTF_8);
-        List<byte[]> payloadByteList = new ArrayList<>();
-        payloadByteList.add(byteArray);
+        List<byte[]> payloadByteList = List.of(byteArray);
         byte[] payload = null;
         SplittableRandom random = new SplittableRandom(0);
 
@@ -325,7 +322,7 @@ public class ProducerPerformanceTest {
     public void testGenerateRandomPayloadByRecordSize() {
         Integer recordSize = 100;
         byte[] payload = new byte[recordSize];
-        List<byte[]> payloadByteList = new ArrayList<>();
+        List<byte[]> payloadByteList = List.of();
         SplittableRandom random = new SplittableRandom(0);
 
         payload = ProducerPerformance.generateRandomPayload(recordSize, payloadByteList, payload, random, false, 0L);
@@ -337,7 +334,7 @@ public class ProducerPerformanceTest {
     @Test
     public void testGenerateMonotonicPayload() {
         byte[] payload = null;
-        List<byte[]> payloadByteList = new ArrayList<>();
+        List<byte[]> payloadByteList = List.of();
         SplittableRandom random = new SplittableRandom(0);
 
         for (int i = 0; i < 10; i++) {
@@ -351,16 +348,19 @@ public class ProducerPerformanceTest {
     public void testGenerateRandomPayloadException() {
         Integer recordSize = null;
         byte[] payload = null;
-        List<byte[]> payloadByteList = new ArrayList<>();
+        List<byte[]> payloadByteList = List.of();
         SplittableRandom random = new SplittableRandom(0);
 
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> ProducerPerformance.generateRandomPayload(recordSize, payloadByteList, payload, random, false, 0L));
+        IllegalArgumentException thrown = assertThrows(
+                IllegalArgumentException.class,
+                () -> ProducerPerformance.generateRandomPayload(recordSize, payloadByteList, payload, random, false, 0L)
+        );
         assertEquals("no payload File Path or record Size or payload-monotonic option provided", thrown.getMessage());
     }
 
     @Test
     public void testClientIdOverride()  throws Exception {
-        List<String> producerProps = Collections.singletonList("client.id=producer-1");
+        List<String> producerProps = List.of("client.id=producer-1");
 
         Properties prop = ProducerPerformance.readProps(producerProps, null);
 
@@ -370,7 +370,7 @@ public class ProducerPerformanceTest {
 
     @Test
     public void testDefaultClientId() throws Exception {
-        List<String> producerProps = Collections.singletonList("acks=1");
+        List<String> producerProps = List.of("acks=1");
 
         Properties prop = ProducerPerformance.readProps(producerProps, null);
 
@@ -391,9 +391,7 @@ public class ProducerPerformanceTest {
         ProducerPerformance.Stats stats = new ProducerPerformance.Stats(numRecords, 5000);
         for (long i = 0; i < numRecords; i++) {
             final Callback callback = new ProducerPerformance.PerfCallback(0, 100, stats);
-            CompletableFuture.runAsync(() -> {
-                callback.onCompletion(null, null);
-            }, singleThreaded);
+            CompletableFuture.runAsync(() -> callback.onCompletion(null, null), singleThreaded);
         }
 
         singleThreaded.shutdown();

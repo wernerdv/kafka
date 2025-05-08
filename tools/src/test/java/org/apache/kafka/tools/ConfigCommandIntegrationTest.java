@@ -50,9 +50,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG;
 import static org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG;
 import static org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG;
@@ -174,31 +171,32 @@ public class ConfigCommandIntegrationTest {
 
         try (Admin client = cluster.admin()) {
             // Add config
-            alterAndVerifyConfig(client, Optional.of(defaultBrokerId), singletonMap(MESSAGE_MAX_BYTES_CONFIG, "110000"), alterOpts);
-            alterAndVerifyConfig(client, Optional.empty(), singletonMap(MESSAGE_MAX_BYTES_CONFIG, "120000"), alterOpts);
+            alterAndVerifyConfig(client, Optional.of(defaultBrokerId), Map.of(MESSAGE_MAX_BYTES_CONFIG, "110000"), alterOpts);
+            alterAndVerifyConfig(client, Optional.empty(), Map.of(MESSAGE_MAX_BYTES_CONFIG, "120000"), alterOpts);
 
             // Change config
-            alterAndVerifyConfig(client, Optional.of(defaultBrokerId), singletonMap(MESSAGE_MAX_BYTES_CONFIG, "130000"), alterOpts);
-            alterAndVerifyConfig(client, Optional.empty(), singletonMap(MESSAGE_MAX_BYTES_CONFIG, "140000"), alterOpts);
+            alterAndVerifyConfig(client, Optional.of(defaultBrokerId), Map.of(MESSAGE_MAX_BYTES_CONFIG, "130000"), alterOpts);
+            alterAndVerifyConfig(client, Optional.empty(), Map.of(MESSAGE_MAX_BYTES_CONFIG, "140000"), alterOpts);
 
             // Delete config
-            deleteAndVerifyConfigValue(client, defaultBrokerId, singleton(MESSAGE_MAX_BYTES_CONFIG), true, alterOpts);
+            deleteAndVerifyConfigValue(client, defaultBrokerId, Set.of(MESSAGE_MAX_BYTES_CONFIG), true, alterOpts);
 
             // Listener configs: should work only with listener name
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap("listener.name.internal.ssl.keystore.location", "/tmp/test.jks"), alterOpts);
+                    Map.of("listener.name.internal.ssl.keystore.location", "/tmp/test.jks"), alterOpts);
             // Per-broker config configured at default cluster-level should fail
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.empty(),
-                            singletonMap("listener.name.internal.ssl.keystore.location", "/tmp/test.jks"), alterOpts));
+                            Map.of("listener.name.internal.ssl.keystore.location", "/tmp/test.jks"), alterOpts));
             deleteAndVerifyConfigValue(client, defaultBrokerId,
-                    singleton("listener.name.internal.ssl.keystore.location"), false, alterOpts);
+                    Set.of("listener.name.internal.ssl.keystore.location"), false, alterOpts);
             alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                    singletonMap("listener.name.external.ssl.keystore.password", "secret"), alterOpts);
+                    Map.of("listener.name.external.ssl.keystore.password", "secret"), alterOpts);
 
-            Map<String, String> configs = new HashMap<>();
-            configs.put("listener.name.external.ssl.keystore.password", "secret");
-            configs.put("log.cleaner.threads", "2");
+            Map<String, String> configs = Map.of(
+                    "listener.name.external.ssl.keystore.password", "secret",
+                    "log.cleaner.threads", "2"
+            );
 
             // Password config update at default cluster-level should fail
             assertThrows(ExecutionException.class,
@@ -271,7 +269,7 @@ public class ConfigCommandIntegrationTest {
             deleteAndVerifyGroupConfigValue(client, defaultGroupName, configs, alterOpts);
 
             // Unknown config configured should fail
-            assertThrows(ExecutionException.class, () -> alterConfigWithAdmin(client, singletonMap("unknown.config", "20000"), alterOpts));
+            assertThrows(ExecutionException.class, () -> alterConfigWithAdmin(client, Map.of("unknown.config", "20000"), alterOpts));
         }
     }
 
@@ -301,7 +299,7 @@ public class ConfigCommandIntegrationTest {
             deleteAndVerifyClientMetricsConfigValue(client, defaultClientMetricsName, configs, alterOpts);
 
             // Unknown config configured should fail
-            assertThrows(ExecutionException.class, () -> alterConfigWithAdmin(client, singletonMap("unknown.config", "20000"), alterOpts));
+            assertThrows(ExecutionException.class, () -> alterConfigWithAdmin(client, Map.of("unknown.config", "20000"), alterOpts));
         }
     }
 
@@ -312,13 +310,13 @@ public class ConfigCommandIntegrationTest {
         try (Admin client = cluster.admin()) {
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap(AUTO_CREATE_TOPICS_ENABLE_CONFIG, "false"), alterOpts));
+                            Map.of(AUTO_CREATE_TOPICS_ENABLE_CONFIG, "false"), alterOpts));
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap(AUTO_LEADER_REBALANCE_ENABLE_CONFIG, "false"), alterOpts));
+                            Map.of(AUTO_LEADER_REBALANCE_ENABLE_CONFIG, "false"), alterOpts));
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap("broker.id", "1"), alterOpts));
+                            Map.of("broker.id", "1"), alterOpts));
         }
     }
 
@@ -328,11 +326,11 @@ public class ConfigCommandIntegrationTest {
 
         try (Admin client = cluster.admin()) {
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap("log.flush.interval.messages", "100"), alterOpts);
+                    Map.of("log.flush.interval.messages", "100"), alterOpts);
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap("log.retention.bytes", "20"), alterOpts);
+                    Map.of("log.retention.bytes", "20"), alterOpts);
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap("log.retention.ms", "2"), alterOpts);
+                    Map.of("log.retention.ms", "2"), alterOpts);
         }
     }
 
@@ -343,13 +341,13 @@ public class ConfigCommandIntegrationTest {
 
         try (Admin client = cluster.admin()) {
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap(listenerName + "ssl.truststore.type", "PKCS12"), alterOpts);
+                    Map.of(listenerName + "ssl.truststore.type", "PKCS12"), alterOpts);
             alterAndVerifyConfig(client, Optional.of(defaultBrokerId),
-                    singletonMap(listenerName + "ssl.truststore.location", "/temp/test.jks"), alterOpts);
+                    Map.of(listenerName + "ssl.truststore.location", "/temp/test.jks"), alterOpts);
             alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                    singletonMap(listenerName + "ssl.truststore.password", "password"), alterOpts);
+                    Map.of(listenerName + "ssl.truststore.password", "password"), alterOpts);
             verifyConfigSecretValue(client, Optional.of(defaultBrokerId),
-                    singleton(listenerName + "ssl.truststore.password"));
+                    Set.of(listenerName + "ssl.truststore.password"));
         }
     }
 
@@ -360,13 +358,13 @@ public class ConfigCommandIntegrationTest {
         try (Admin client = cluster.admin()) {
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap(SSL_TRUSTSTORE_TYPE_CONFIG, "PKCS12"), alterOpts));
+                            Map.of(SSL_TRUSTSTORE_TYPE_CONFIG, "PKCS12"), alterOpts));
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap(SSL_TRUSTSTORE_LOCATION_CONFIG, "/temp/test.jks"), alterOpts));
+                            Map.of(SSL_TRUSTSTORE_LOCATION_CONFIG, "/temp/test.jks"), alterOpts));
             assertThrows(ExecutionException.class,
                     () -> alterConfigWithAdmin(client, Optional.of(defaultBrokerId),
-                            singletonMap(SSL_TRUSTSTORE_PASSWORD_CONFIG, "password"), alterOpts));
+                            Map.of(SSL_TRUSTSTORE_PASSWORD_CONFIG, "password"), alterOpts));
         }
     }
 
@@ -491,7 +489,7 @@ public class ConfigCommandIntegrationTest {
 
     private List<String> entityOp(Optional<String> entityId) {
         return entityId.map(id -> asList("--entity-name", id))
-                .orElse(singletonList("--entity-default"));
+                .orElse(List.of("--entity-default"));
     }
 
     private List<String> generateDefaultAlterOpts(String bootstrapServers) {
@@ -580,7 +578,7 @@ public class ConfigCommandIntegrationTest {
 
     private Stream<ConfigEntry> getConfigEntryStream(Admin client,
                                                      ConfigResource configResource) throws InterruptedException, ExecutionException {
-        return client.describeConfigs(singletonList(configResource))
+        return client.describeConfigs(List.of(configResource))
                 .all()
                 .get()
                 .values()

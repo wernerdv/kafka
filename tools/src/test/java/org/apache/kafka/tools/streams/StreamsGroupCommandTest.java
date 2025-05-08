@@ -91,9 +91,7 @@ public class StreamsGroupCommandTest {
     public void testListWithUnrecognizedOption() {
         String bootstrapServer = "localhost:9092";
         String[] cgcArgs = new String[]{"--frivolous-nonsense", "--bootstrap-server", bootstrapServer, "--list"};
-        final Exception exception = assertThrows(OptionException.class, () -> {
-            getStreamsGroupService(cgcArgs, new MockAdminClient());
-        });
+        final Exception exception = assertThrows(OptionException.class, () -> getStreamsGroupService(cgcArgs, new MockAdminClient()));
         assertEquals("frivolous-nonsense is not a recognized option", exception.getMessage());
     }
 
@@ -222,34 +220,34 @@ public class StreamsGroupCommandTest {
     @Test
     public void testGroupStatesFromString() {
         Set<GroupState> result = StreamsGroupCommand.groupStatesFromString("empty");
-        assertEquals(new HashSet<>(List.of(GroupState.EMPTY)), result);
+        assertEquals(Set.of(GroupState.EMPTY), result);
         result = StreamsGroupCommand.groupStatesFromString("EMPTY");
-        assertEquals(new HashSet<>(List.of(GroupState.EMPTY)), result);
+        assertEquals(Set.of(GroupState.EMPTY), result);
 
         result = StreamsGroupCommand.groupStatesFromString("notready");
-        assertEquals(new HashSet<>(List.of(GroupState.NOT_READY)), result);
+        assertEquals(Set.of(GroupState.NOT_READY), result);
         result = StreamsGroupCommand.groupStatesFromString("notReady");
-        assertEquals(new HashSet<>(List.of(GroupState.NOT_READY)), result);
+        assertEquals(Set.of(GroupState.NOT_READY), result);
 
         result = StreamsGroupCommand.groupStatesFromString("assigning");
-        assertEquals(new HashSet<>(List.of(GroupState.ASSIGNING)), result);
+        assertEquals(Set.of(GroupState.ASSIGNING), result);
         result = StreamsGroupCommand.groupStatesFromString("ASSIGNING");
-        assertEquals(new HashSet<>(List.of(GroupState.ASSIGNING)), result);
+        assertEquals(Set.of(GroupState.ASSIGNING), result);
 
         result = StreamsGroupCommand.groupStatesFromString("RECONCILING");
-        assertEquals(new HashSet<>(List.of(GroupState.RECONCILING)), result);
+        assertEquals(Set.of(GroupState.RECONCILING), result);
         result = StreamsGroupCommand.groupStatesFromString("reconCILING");
-        assertEquals(new HashSet<>(List.of(GroupState.RECONCILING)), result);
+        assertEquals(Set.of(GroupState.RECONCILING), result);
 
         result = StreamsGroupCommand.groupStatesFromString("STABLE");
-        assertEquals(new HashSet<>(List.of(GroupState.STABLE)), result);
+        assertEquals(Set.of(GroupState.STABLE), result);
         result = StreamsGroupCommand.groupStatesFromString("stable");
-        assertEquals(new HashSet<>(List.of(GroupState.STABLE)), result);
+        assertEquals(Set.of(GroupState.STABLE), result);
 
         result = StreamsGroupCommand.groupStatesFromString("DEAD");
-        assertEquals(new HashSet<>(List.of(GroupState.DEAD)), result);
+        assertEquals(Set.of(GroupState.DEAD), result);
         result = StreamsGroupCommand.groupStatesFromString("dead");
-        assertEquals(new HashSet<>(List.of(GroupState.DEAD)), result);
+        assertEquals(Set.of(GroupState.DEAD), result);
 
         assertThrow("preparingRebalance");
         assertThrow("completingRebalance");
@@ -264,7 +262,7 @@ public class StreamsGroupCommandTest {
     }
 
     private static void assertThrow(final String wrongState) {
-        final Set<String> validStates = new HashSet<>(Arrays.asList("Assigning", "Dead", "Empty", "Reconciling", "Stable", "NotReady"));
+        final Set<String> validStates = Set.of("Assigning", "Dead", "Empty", "Reconciling", "Stable", "NotReady");
 
         final Exception exception = assertThrows(IllegalArgumentException.class, () -> StreamsGroupCommand.groupStatesFromString(wrongState));
 

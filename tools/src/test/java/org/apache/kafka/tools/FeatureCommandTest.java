@@ -28,15 +28,12 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
 import static org.apache.kafka.clients.admin.FeatureUpdate.UpgradeType.SAFE_DOWNGRADE;
 import static org.apache.kafka.clients.admin.FeatureUpdate.UpgradeType.UNSAFE_DOWNGRADE;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -54,7 +51,7 @@ public class FeatureCommandTest {
                 assertEquals(0, FeatureCommand.mainNoExit("--bootstrap-server", cluster.bootstrapServers(), "describe"))
         );
 
-        List<String> features = Arrays.stream(commandOutput.split("\n")).sorted().collect(Collectors.toList());
+        List<String> features = Arrays.stream(commandOutput.split("\n")).sorted().toList();
 
         // Change expected message to reflect latest MetadataVersion (SupportedMaxVersion increases when adding a new version)
         assertEquals("Feature: eligible.leader.replicas.version\tSupportedMinVersion: 0\t" +
@@ -80,7 +77,7 @@ public class FeatureCommandTest {
                 assertEquals(0, FeatureCommand.mainNoExit("--bootstrap-controller", cluster.bootstrapControllers(), "describe"))
         );
 
-        List<String> features = Arrays.stream(commandOutput.split("\n")).sorted().collect(Collectors.toList());
+        List<String> features = Arrays.stream(commandOutput.split("\n")).sorted().toList();
 
         // Change expected message to reflect latest MetadataVersion (SupportedMaxVersion increases when adding a new version)
         assertEquals("Feature: eligible.leader.replicas.version\tSupportedMinVersion: 0\t" +
@@ -215,10 +212,10 @@ public class FeatureCommandTest {
     @Test
     public void testDowngradeType() {
         assertEquals(SAFE_DOWNGRADE, FeatureCommand.downgradeType(
-            new Namespace(singletonMap("unsafe", Boolean.FALSE))));
+            new Namespace(Map.of("unsafe", Boolean.FALSE))));
         assertEquals(UNSAFE_DOWNGRADE, FeatureCommand.downgradeType(
-            new Namespace(singletonMap("unsafe", Boolean.TRUE))));
-        assertEquals(SAFE_DOWNGRADE, FeatureCommand.downgradeType(new Namespace(emptyMap())));
+            new Namespace(Map.of("unsafe", Boolean.TRUE))));
+        assertEquals(SAFE_DOWNGRADE, FeatureCommand.downgradeType(new Namespace(Map.of())));
     }
 
     @Test
@@ -267,7 +264,7 @@ public class FeatureCommandTest {
     public void testHandleUpgradeToUnsupportedMetadataVersion() {
         Map<String, Object> namespace = new HashMap<>();
         namespace.put("metadata", "3.3-IV1");
-        namespace.put("feature", Collections.singletonList("foo.bar=6"));
+        namespace.put("feature", List.of("foo.bar=6"));
         namespace.put("dry_run", false);
         Throwable t = assertThrows(TerseException.class, () -> FeatureCommand.handleUpgrade(new Namespace(namespace), buildAdminClient()));
         assertTrue(t.getMessage().contains("Unknown metadata.version 3.3-IV1"));
@@ -277,7 +274,7 @@ public class FeatureCommandTest {
     public void testHandleUpgradeToLowerVersion() {
         Map<String, Object> namespace = new HashMap<>();
         namespace.put("metadata", "3.3-IV3");
-        namespace.put("feature", Collections.singletonList("foo.bar=6"));
+        namespace.put("feature", List.of("foo.bar=6"));
         namespace.put("dry_run", false);
         String upgradeOutput = ToolsTestUtils.captureStandardOut(() -> {
             Throwable t = assertThrows(TerseException.class, () -> FeatureCommand.handleUpgrade(new Namespace(namespace), buildAdminClient()));
@@ -292,7 +289,7 @@ public class FeatureCommandTest {
     public void testHandleUpgradeToLowerVersionDryRun() {
         Map<String, Object> namespace = new HashMap<>();
         namespace.put("metadata", "3.3-IV3");
-        namespace.put("feature", Collections.singletonList("foo.bar=6"));
+        namespace.put("feature", List.of("foo.bar=6"));
         namespace.put("dry_run", true);
         String upgradeOutput = ToolsTestUtils.captureStandardOut(() -> {
             Throwable t = assertThrows(TerseException.class, () -> FeatureCommand.handleUpgrade(new Namespace(namespace), buildAdminClient()));
@@ -307,7 +304,7 @@ public class FeatureCommandTest {
     public void testHandleDowngrade() {
         Map<String, Object> namespace = new HashMap<>();
         namespace.put("metadata", "3.7-IV0");
-        namespace.put("feature", Collections.singletonList("foo.bar=1"));
+        namespace.put("feature", List.of("foo.bar=1"));
         namespace.put("dry_run", false);
         String downgradeOutput = ToolsTestUtils.captureStandardOut(() -> {
             Throwable t = assertThrows(TerseException.class, () -> FeatureCommand.handleDowngrade(new Namespace(namespace), buildAdminClient()));
@@ -322,7 +319,7 @@ public class FeatureCommandTest {
     public void testHandleDowngradeDryRun() {
         Map<String, Object> namespace = new HashMap<>();
         namespace.put("metadata", "3.7-IV0");
-        namespace.put("feature", Collections.singletonList("foo.bar=1"));
+        namespace.put("feature", List.of("foo.bar=1"));
         namespace.put("dry_run", true);
         String downgradeOutput = ToolsTestUtils.captureStandardOut(() -> {
             Throwable t = assertThrows(TerseException.class, () -> FeatureCommand.handleDowngrade(new Namespace(namespace), buildAdminClient()));
@@ -466,7 +463,7 @@ public class FeatureCommandTest {
     @Test
     public void testHandleFeatureDependenciesForFeatureWithDependencies() {
         Map<String, Object> namespace = new HashMap<>();
-        namespace.put("feature", Collections.singletonList("test.feature.version=2"));
+        namespace.put("feature", List.of("test.feature.version=2"));
 
         String output = ToolsTestUtils.captureStandardOut(() -> {
             try {
@@ -488,7 +485,7 @@ public class FeatureCommandTest {
     @Test
     public void testHandleFeatureDependenciesForFeatureWithNoDependencies() {
         Map<String, Object> namespace = new HashMap<>();
-        namespace.put("feature", Collections.singletonList("metadata.version=17"));
+        namespace.put("feature", List.of("metadata.version=17"));
 
         String output = ToolsTestUtils.captureStandardOut(() -> {
             try {
@@ -504,7 +501,7 @@ public class FeatureCommandTest {
     @Test
     public void testHandleFeatureDependenciesForUnknownFeature() {
         Map<String, Object> namespace = new HashMap<>();
-        namespace.put("feature", Collections.singletonList("unknown.feature=1"));
+        namespace.put("feature", List.of("unknown.feature=1"));
 
         Exception exception = assertThrows(
             TerseException.class,
@@ -517,7 +514,7 @@ public class FeatureCommandTest {
     @Test
     public void testHandleFeatureDependenciesForFeatureWithUnknownFeatureVersion() {
         Map<String, Object> namespace = new HashMap<>();
-        namespace.put("feature", Collections.singletonList("transaction.version=1000"));
+        namespace.put("feature", List.of("transaction.version=1000"));
 
         Exception exception = assertThrows(
             IllegalArgumentException.class,
@@ -530,7 +527,7 @@ public class FeatureCommandTest {
     @Test
     public void testHandleFeatureDependenciesForInvalidVersionFormat() {
         Map<String, Object> namespace = new HashMap<>();
-        namespace.put("feature", Collections.singletonList("metadata.version=invalid"));
+        namespace.put("feature", List.of("metadata.version=invalid"));
 
         RuntimeException exception = assertThrows(
             RuntimeException.class,

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +33,7 @@ public class NoOpMessageFormatterTest {
     public void testNoOpMessageFormatter() {
         ConsumerRecord<byte[], byte[]> record = new ConsumerRecord<>("topic", 0, 123, "key".getBytes(), "value".getBytes());
         try (MessageFormatter formatter = new NoOpMessageFormatter()) {
-            formatter.configure(new HashMap<>());
+            formatter.configure(Map.of());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             formatter.writeTo(record, new PrintStream(out));
             assertEquals("", out.toString());

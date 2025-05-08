@@ -37,7 +37,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 import scala.jdk.javaapi.CollectionConverters;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,15 +79,15 @@ public class LeaderElectionCommandTest {
         cluster.waitForReadyBrokers();
         try (Admin client = cluster.admin()) {
 
-            createTopic(client, topic, Collections.singletonMap(partition, assignment));
+            createTopic(client, topic, Map.of(partition, assignment));
 
             TopicPartition topicPartition = new TopicPartition(topic, partition);
 
             TestUtils.assertLeader(client, topicPartition, broker2);
             cluster.shutdownBroker(broker3);
             TestUtils.waitForBrokersOutOfIsr(client,
-                    CollectionConverters.asScala(singletonList(topicPartition)).toSet(),
-                    CollectionConverters.asScala(singletonList(broker3)).toSet()
+                    CollectionConverters.asScala(List.of(topicPartition)).toSet(),
+                    CollectionConverters.asScala(List.of(broker3)).toSet()
             );
             cluster.shutdownBroker(broker2);
             TestUtils.assertNoLeader(client, topicPartition);
@@ -137,7 +135,7 @@ public class LeaderElectionCommandTest {
 
         cluster.waitForReadyBrokers();
         try (Admin client = cluster.admin()) {
-            createTopic(client, topic, Collections.singletonMap(partition, assignment));
+            createTopic(client, topic, Map.of(partition, assignment));
 
             TopicPartition topicPartition = new TopicPartition(topic, partition);
 
@@ -145,8 +143,8 @@ public class LeaderElectionCommandTest {
 
             cluster.shutdownBroker(broker3);
             TestUtils.waitForBrokersOutOfIsr(client,
-                    CollectionConverters.asScala(singletonList(topicPartition)).toSet(),
-                    CollectionConverters.asScala(singletonList(broker3)).toSet()
+                    CollectionConverters.asScala(List.of(topicPartition)).toSet(),
+                    CollectionConverters.asScala(List.of(broker3)).toSet()
             );
             cluster.shutdownBroker(broker2);
             TestUtils.assertNoLeader(client, topicPartition);
@@ -183,15 +181,15 @@ public class LeaderElectionCommandTest {
 
             cluster.shutdownBroker(broker3);
             TestUtils.waitForBrokersOutOfIsr(client,
-                    CollectionConverters.asScala(singletonList(topicPartition)).toSet(),
-                    CollectionConverters.asScala(singletonList(broker3)).toSet()
+                    CollectionConverters.asScala(List.of(topicPartition)).toSet(),
+                    CollectionConverters.asScala(List.of(broker3)).toSet()
             );
             cluster.shutdownBroker(broker2);
             TestUtils.assertNoLeader(client, topicPartition);
             cluster.startBroker(broker3);
             TestUtils.waitForOnlineBroker(client, broker3);
 
-            Path topicPartitionPath = tempTopicPartitionFile(singletonList(topicPartition));
+            Path topicPartitionPath = tempTopicPartitionFile(List.of(topicPartition));
 
             assertEquals(0, LeaderElectionCommand.mainNoExit(
                     "--bootstrap-server", cluster.bootstrapServers(),
@@ -224,7 +222,7 @@ public class LeaderElectionCommandTest {
             TestUtils.assertLeader(client, topicPartition, broker3);
             cluster.startBroker(broker2);
             TestUtils.waitForBrokersInIsr(client, topicPartition,
-                    CollectionConverters.asScala(singletonList(broker2)).toSet()
+                    CollectionConverters.asScala(List.of(broker2)).toSet()
             );
 
             assertEquals(0, LeaderElectionCommand.mainNoExit(
@@ -277,10 +275,10 @@ public class LeaderElectionCommandTest {
             TestUtils.assertLeader(client, topicPartition0, broker3);
             cluster.startBroker(broker2);
             TestUtils.waitForBrokersInIsr(client, topicPartition0,
-                    CollectionConverters.asScala(singletonList(broker2)).toSet()
+                    CollectionConverters.asScala(List.of(broker2)).toSet()
             );
             TestUtils.waitForBrokersInIsr(client, topicPartition1,
-                    CollectionConverters.asScala(singletonList(broker2)).toSet()
+                    CollectionConverters.asScala(List.of(broker2)).toSet()
             );
         }
 
@@ -308,7 +306,7 @@ public class LeaderElectionCommandTest {
 
     private void createTopic(Admin admin, String topic, Map<Integer, List<Integer>> replicaAssignment) throws ExecutionException, InterruptedException {
         NewTopic newTopic = new NewTopic(topic, replicaAssignment);
-        List<NewTopic> newTopics = singletonList(newTopic);
+        List<NewTopic> newTopics = List.of(newTopic);
         CreateTopicsResult createTopicResult = admin.createTopics(newTopics);
         createTopicResult.all().get();
     }

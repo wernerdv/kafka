@@ -24,7 +24,8 @@ import org.apache.kafka.common.errors.GroupIdNotFoundException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import scala.jdk.javaapi.CollectionConverters;
@@ -38,11 +39,11 @@ public class AuthorizerIntegrationTest extends AbstractAuthorizerIntegrationTest
     @ParameterizedTest
     @ValueSource(strings = {"kraft"})
     public void testDescribeGroupCliWithGroupDescribe(String quorum) throws Exception {
-        addAndVerifyAcls(CollectionConverters.asScala(Collections.singleton(new AccessControlEntry(ClientPrincipal().toString(), "*", DESCRIBE, ALLOW))).toSet(), groupResource());
+        addAndVerifyAcls(CollectionConverters.asScala(Set.of(new AccessControlEntry(ClientPrincipal().toString(), "*", DESCRIBE, ALLOW))).toSet(), groupResource());
 
         String[] cgcArgs = new String[]{"--bootstrap-server", bootstrapServers(listenerName()), "--describe", "--group", group()};
         ConsumerGroupCommandOptions opts = ConsumerGroupCommandOptions.fromArgs(cgcArgs);
-        try (ConsumerGroupCommand.ConsumerGroupService consumerGroupService = new ConsumerGroupCommand.ConsumerGroupService(opts, Collections.emptyMap())) {
+        try (ConsumerGroupCommand.ConsumerGroupService consumerGroupService = new ConsumerGroupCommand.ConsumerGroupService(opts, Map.of())) {
             consumerGroupService.describeGroups();
             fail("Non-existent group should throw an exception");
         } catch (ExecutionException e) {

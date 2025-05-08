@@ -44,9 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -111,16 +109,16 @@ public class PushHttpMetricsReporterTest {
 
     @Test
     public void testConfigureBadUrl() {
-        Map<String, String> config = new HashMap<>();
-        config.put(PushHttpMetricsReporter.METRICS_URL_CONFIG, "malformed;url");
-        config.put(PushHttpMetricsReporter.METRICS_PERIOD_CONFIG, "5");
+        Map<String, String> config = Map.of(
+                PushHttpMetricsReporter.METRICS_URL_CONFIG, "malformed;url",
+                PushHttpMetricsReporter.METRICS_PERIOD_CONFIG, "5"
+        );
         assertThrows(ConfigException.class, () -> reporter.configure(config));
     }
 
     @Test
     public void testConfigureMissingPeriod() {
-        Map<String, String> config = new HashMap<>();
-        config.put(PushHttpMetricsReporter.METRICS_URL_CONFIG, URL.toString());
+        Map<String, String> config = Map.of(PushHttpMetricsReporter.METRICS_URL_CONFIG, URL.toString());
         assertThrows(ConfigException.class, () -> reporter.configure(config));
     }
 
@@ -186,35 +184,35 @@ public class PushHttpMetricsReporterTest {
         verifyConfigure();
         KafkaMetric metric1 = new KafkaMetric(
                 new Object(),
-                new MetricName("name1", "group1", "desc1", Collections.singletonMap("key1", "value1")),
+                new MetricName("name1", "group1", "desc1", Map.of("key1", "value1")),
                 new ImmutableValue<>(1.0),
                 null,
                 time
         );
         KafkaMetric newMetric1 = new KafkaMetric(
                 new Object(),
-                new MetricName("name1", "group1", "desc1", Collections.singletonMap("key1", "value1")),
+                new MetricName("name1", "group1", "desc1", Map.of("key1", "value1")),
                 new ImmutableValue<>(-1.0),
                 null,
                 time
         );
         KafkaMetric metric2 = new KafkaMetric(
                 new Object(),
-                new MetricName("name2", "group2", "desc2", Collections.singletonMap("key2", "value2")),
+                new MetricName("name2", "group2", "desc2", Map.of("key2", "value2")),
                 new ImmutableValue<>(2.0),
                 null,
                 time
         );
         KafkaMetric metric3 = new KafkaMetric(
                 new Object(),
-                new MetricName("name3", "group3", "desc3", Collections.singletonMap("key3", "value3")),
+                new MetricName("name3", "group3", "desc3", Map.of("key3", "value3")),
                 new ImmutableValue<>(3.0),
                 null,
                 time
         );
         KafkaMetric metric4 = new KafkaMetric(
             new Object(),
-            new MetricName("name4", "group4", "desc4", Collections.singletonMap("key4", "value4")),
+            new MetricName("name4", "group4", "desc4", Map.of("key4", "value4")),
             new ImmutableValue<>("value4"),
             null,
             time
@@ -272,9 +270,10 @@ public class PushHttpMetricsReporterTest {
     }
 
     private void configure() {
-        Map<String, String> config = new HashMap<>();
-        config.put(PushHttpMetricsReporter.METRICS_URL_CONFIG, URL.toString());
-        config.put(PushHttpMetricsReporter.METRICS_PERIOD_CONFIG, "5");
+        Map<String, String> config = Map.of(
+                PushHttpMetricsReporter.METRICS_URL_CONFIG, URL.toString(),
+                PushHttpMetricsReporter.METRICS_PERIOD_CONFIG, "5"
+        );
         reporter.configure(config);
     }
 

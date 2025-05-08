@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -208,7 +208,7 @@ public class ClientMetricsCommandTest {
         ClientMetricsCommand.ClientMetricsService service = new ClientMetricsCommand.ClientMetricsService(adminClient);
 
         ConfigResource cr = new ConfigResource(ConfigResource.Type.CLIENT_METRICS, clientMetricsName);
-        Config cfg = new Config(Collections.singleton(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
+        Config cfg = new Config(Set.of(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
         DescribeConfigsResult describeResult = AdminClientTestUtils.describeConfigsResult(cr, cfg);
         when(adminClient.describeConfigs(any())).thenReturn(describeResult);
         AlterConfigsResult alterResult = AdminClientTestUtils.alterConfigsResult(cr);
@@ -232,7 +232,7 @@ public class ClientMetricsCommandTest {
         ClientMetricsCommand.ClientMetricsService service = new ClientMetricsCommand.ClientMetricsService(adminClient);
 
         ConfigResource cr = new ConfigResource(ConfigResource.Type.CLIENT_METRICS, clientMetricsName);
-        Config cfg = new Config(Collections.singleton(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
+        Config cfg = new Config(Set.of(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
         DescribeConfigsResult describeResult = AdminClientTestUtils.describeConfigsResult(cr, cfg);
         when(adminClient.describeConfigs(any())).thenReturn(describeResult);
 
@@ -257,7 +257,7 @@ public class ClientMetricsCommandTest {
         ListClientMetricsResourcesResult result = AdminClientTestUtils.listClientMetricsResourcesResult(clientMetricsName);
         when(adminClient.listClientMetricsResources()).thenReturn(result);
         ConfigResource cr = new ConfigResource(ConfigResource.Type.CLIENT_METRICS, clientMetricsName);
-        Config cfg = new Config(Collections.singleton(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
+        Config cfg = new Config(Set.of(new ConfigEntry("metrics", "org.apache.kafka.producer.")));
         DescribeConfigsResult describeResult = AdminClientTestUtils.describeConfigsResult(cr, cfg);
         when(adminClient.describeConfigs(any())).thenReturn(describeResult);
 
@@ -299,7 +299,7 @@ public class ClientMetricsCommandTest {
         ListClientMetricsResourcesResult result = AdminClientTestUtils.listClientMetricsResourcesResult(Errors.UNSUPPORTED_VERSION.exception());
         when(adminClient.listClientMetricsResources()).thenReturn(result);
 
-        assertThrows(ExecutionException.class, () -> service.listClientMetrics());
+        assertThrows(ExecutionException.class, service::listClientMetrics);
     }
 
     private void assertInitializeInvalidOptionsExitCode(int expected, String[] options) {

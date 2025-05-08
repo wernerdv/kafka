@@ -52,10 +52,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.time.Duration.ofMillis;
@@ -189,7 +189,7 @@ public abstract class AbstractResetIntegrationTest {
 
         for (final KeyValue<Long, String> record : records) {
             mockTime.sleep(10);
-            IntegrationTestUtils.produceKeyValuesSynchronouslyWithTimestamp(INPUT_TOPIC, Collections.singleton(record), producerConfig, mockTime.milliseconds());
+            IntegrationTestUtils.produceKeyValuesSynchronouslyWithTimestamp(INPUT_TOPIC, Set.of(record), producerConfig, mockTime.milliseconds());
         }
     }
 
@@ -288,7 +288,7 @@ public abstract class AbstractResetIntegrationTest {
         if (!useRepartitioned) {
             IntegrationTestUtils.produceKeyValuesSynchronouslyWithTimestamp(
                 INTERMEDIATE_USER_TOPIC,
-                Collections.singleton(badMessage),
+                Set.of(badMessage),
                 producerConfig,
                 mockTime.milliseconds());
         }

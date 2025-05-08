@@ -55,7 +55,6 @@ import org.mockito.ArgumentMatchers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -120,7 +119,7 @@ public class ShareGroupCommandTest {
 
         when(adminClient.listGroups(any(ListGroupsOptions.class))).thenReturn(result);
         try (ShareGroupService service = getShareGroupService(cgcArgs, adminClient)) {
-            Set<String> expectedGroups = new HashSet<>(Arrays.asList(firstGroup, secondGroup));
+            Set<String> expectedGroups = Set.of(firstGroup, secondGroup);
 
             final Set[] foundGroups = new Set[]{Set.of()};
             TestUtils.waitForCondition(() -> {
@@ -145,9 +144,9 @@ public class ShareGroupCommandTest {
         )));
         when(adminClient.listGroups(any(ListGroupsOptions.class))).thenReturn(resultWithAllStates);
         try (ShareGroupService service = getShareGroupService(cgcArgs, adminClient)) {
-            Set<GroupListing> expectedListing = new HashSet<>(Arrays.asList(
+            Set<GroupListing> expectedListing = Set.of(
                 new GroupListing(firstGroup, Optional.of(GroupType.SHARE), "share", Optional.of(GroupState.STABLE)),
-                new GroupListing(secondGroup, Optional.of(GroupType.SHARE), "share", Optional.of(GroupState.EMPTY))));
+                new GroupListing(secondGroup, Optional.of(GroupType.SHARE), "share", Optional.of(GroupState.EMPTY)));
 
             final Set[] foundListing = new Set[]{Set.of()};
             TestUtils.waitForCondition(() -> {
@@ -241,7 +240,7 @@ public class ShareGroupCommandTest {
             ListShareGroupOffsetsResult listShareGroupOffsetsResult = AdminClientTestUtils.createListShareGroupOffsetsResult(
                 Map.of(
                     firstGroup,
-                    KafkaFuture.completedFuture(Collections.singletonMap(new TopicPartition("topic1", 0), null))
+                    KafkaFuture.completedFuture(Map.of(new TopicPartition("topic1", 0), null))
                 )
             );
 

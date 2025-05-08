@@ -16,7 +16,6 @@
  */
 package org.apache.kafka.tools.streams;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.coordinator.group.GroupCoordinatorConfig;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -183,14 +181,6 @@ public class DescribeStreamsGroupTest {
             .count()
             .toStream().to(OUTPUT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
         return builder.build();
-    }
-
-    private StreamsGroupCommand.StreamsGroupService getStreamsGroupService(String[] args) {
-        StreamsGroupCommandOptions opts = StreamsGroupCommandOptions.fromArgs(args);
-        return new StreamsGroupCommand.StreamsGroupService(
-            opts,
-            Map.of(AdminClientConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE))
-        );
     }
 
     private static void validateDescribeOutput(

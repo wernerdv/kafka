@@ -29,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInfo;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -62,7 +61,7 @@ public class ResetIntegrationWithSslTest extends AbstractResetIntegrationTest {
     }
 
     @BeforeAll
-    public static void startCluster() throws IOException {
+    public static void startCluster() {
         CLUSTER.start();
     }
 

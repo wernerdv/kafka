@@ -43,7 +43,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,7 +56,6 @@ import java.util.stream.Collectors;
 
 import joptsimple.OptionException;
 
-import static java.util.Collections.emptyMap;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_PROTOCOL_CONFIG;
@@ -105,7 +103,7 @@ public class ListConsumerGroupTest {
             String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + i;
             createTopic(topic);
 
-            try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+            try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
                  AutoCloseable topicConsumerGroupExecutor = consumerGroupClosable(GroupProtocol.CLASSIC, topicGroup, topic);
                  AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic);
                  ConsumerGroupCommand.ConsumerGroupService service = getConsumerGroupService(new String[]{"--bootstrap-server", clusterInstance.bootstrapServers(), "--list"})
@@ -139,7 +137,7 @@ public class ListConsumerGroupTest {
             String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + i;
             createTopic(topic);
 
-            try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+            try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
                  AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic);
                  ConsumerGroupCommand.ConsumerGroupService service = getConsumerGroupService(new String[]{"--bootstrap-server", clusterInstance.bootstrapServers(), "--list", "--state"})
             ) {
@@ -160,7 +158,7 @@ public class ListConsumerGroupTest {
 
                 assertGroupListing(
                         service,
-                        Collections.emptySet(),
+                        Set.of(),
                         EnumSet.allOf(GroupState.class),
                         expectedListing
                 );
@@ -176,16 +174,16 @@ public class ListConsumerGroupTest {
 
                 assertGroupListing(
                         service,
-                        Collections.emptySet(),
+                        Set.of(),
                         Set.of(GroupState.STABLE),
                         expectedListing
                 );
 
                 assertGroupListing(
                         service,
-                        Collections.emptySet(),
+                        Set.of(),
                         Set.of(GroupState.PREPARING_REBALANCE),
-                        Collections.emptySet()
+                        Set.of()
                 );
             }
 
@@ -202,7 +200,7 @@ public class ListConsumerGroupTest {
         String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + "0";
         createTopic(topic);
 
-        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
              AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic);
              ConsumerGroupCommand.ConsumerGroupService service = getConsumerGroupService(new String[]{"--bootstrap-server", clusterInstance.bootstrapServers(), "--list", "--state"})
         ) {
@@ -224,8 +222,8 @@ public class ListConsumerGroupTest {
             // No filters explicitly mentioned. Expectation is that all groups are returned.
             assertGroupListing(
                     service,
-                    Collections.emptySet(),
-                    Collections.emptySet(),
+                    Set.of(),
+                    Set.of(),
                     expectedListing
             );
 
@@ -235,14 +233,14 @@ public class ListConsumerGroupTest {
             assertGroupListing(
                     service,
                     Set.of(GroupType.CONSUMER),
-                    Collections.emptySet(),
-                    Collections.emptySet()
+                    Set.of(),
+                    Set.of()
             );
 
             assertGroupListing(
                     service,
                     Set.of(GroupType.CLASSIC),
-                    Collections.emptySet(),
+                    Set.of(),
                     expectedListing
             );
         }
@@ -257,7 +255,7 @@ public class ListConsumerGroupTest {
         String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + "0";
         createTopic(topic);
 
-        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
              AutoCloseable topicConsumerGroupExecutor = consumerGroupClosable(GroupProtocol.CLASSIC, topicGroup, topic);
              AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic);
              ConsumerGroupCommand.ConsumerGroupService service = getConsumerGroupService(new String[]{"--bootstrap-server", clusterInstance.bootstrapServers(), "--list"})
@@ -288,8 +286,8 @@ public class ListConsumerGroupTest {
 
             assertGroupListing(
                     service,
-                    Collections.emptySet(),
-                    Collections.emptySet(),
+                    Set.of(),
+                    Set.of(),
                     expectedListing
             );
 
@@ -307,7 +305,7 @@ public class ListConsumerGroupTest {
             assertGroupListing(
                     service,
                     Set.of(GroupType.CONSUMER),
-                    Collections.emptySet(),
+                    Set.of(),
                     expectedListing
             );
 
@@ -329,7 +327,7 @@ public class ListConsumerGroupTest {
             assertGroupListing(
                     service,
                     Set.of(GroupType.CLASSIC),
-                    Collections.emptySet(),
+                    Set.of(),
                     expectedListing
             );
         }
@@ -343,15 +341,15 @@ public class ListConsumerGroupTest {
         String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + "0";
         createTopic(topic);
 
-        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
              AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic)
         ) {
             validateListOutput(
                     Arrays.asList("--bootstrap-server", clusterInstance.bootstrapServers(), "--list"),
-                    Collections.emptyList(),
+                    List.of(),
                     Set.of(
-                            Collections.singletonList(protocolGroup),
-                            Collections.singletonList(topicPartitionsGroup)
+                            List.of(protocolGroup),
+                            List.of(topicPartitionsGroup)
                     )
             );
 
@@ -428,15 +426,15 @@ public class ListConsumerGroupTest {
         String topicPartitionsGroup = TOPIC_PARTITIONS_GROUP_PREFIX + "0";
         createTopic(topic);
 
-        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Collections.singleton(new TopicPartition(topic, 0)));
+        try (AutoCloseable topicPartitionsConsumerGroupExecutor = consumerGroupClosable(topicPartitionsGroup, Set.of(new TopicPartition(topic, 0)));
              AutoCloseable protocolConsumerGroupExecutor = consumerGroupClosable(groupProtocol, protocolGroup, topic)
         ) {
             validateListOutput(
                     Arrays.asList("--bootstrap-server", clusterInstance.bootstrapServers(), "--list"),
-                    Collections.emptyList(),
+                    List.of(),
                     Set.of(
-                            Collections.singletonList(protocolGroup),
-                            Collections.singletonList(topicPartitionsGroup)
+                            List.of(protocolGroup),
+                            List.of(topicPartitionsGroup)
                     )
             );
 
@@ -489,7 +487,7 @@ public class ListConsumerGroupTest {
         Map<String, Object> configs = composeConfigs(
                 groupId,
                 protocol.name,
-                emptyMap()
+                Map.of()
         );
 
         return ConsumerGroupCommandTestUtils.buildConsumers(
@@ -504,7 +502,7 @@ public class ListConsumerGroupTest {
         Map<String, Object> configs = composeConfigs(
                 groupId,
                 GroupProtocol.CLASSIC.name,
-                emptyMap()
+                Map.of()
         );
 
         return ConsumerGroupCommandTestUtils.buildConsumers(
@@ -531,28 +529,26 @@ public class ListConsumerGroupTest {
 
     private ConsumerGroupCommand.ConsumerGroupService getConsumerGroupService(String[] args) {
         ConsumerGroupCommandOptions opts = ConsumerGroupCommandOptions.fromArgs(args);
-        ConsumerGroupCommand.ConsumerGroupService service = new ConsumerGroupCommand.ConsumerGroupService(
+        return new ConsumerGroupCommand.ConsumerGroupService(
                 opts,
-                Collections.singletonMap(AdminClientConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE))
+                Map.of(AdminClientConfig.RETRIES_CONFIG, Integer.toString(Integer.MAX_VALUE))
         );
-
-        return service;
     }
 
     private void createTopic(String topic) {
-        try (Admin admin = Admin.create(Collections.singletonMap(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
-            Assertions.assertDoesNotThrow(() -> admin.createTopics(Collections.singletonList(new NewTopic(topic, 1, (short) 1))).topicId(topic).get());
+        try (Admin admin = Admin.create(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
+            Assertions.assertDoesNotThrow(() -> admin.createTopics(List.of(new NewTopic(topic, 1, (short) 1))).topicId(topic).get());
         }
     }
 
     private void deleteTopic(String topic) {
-        try (Admin admin = Admin.create(Collections.singletonMap(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
-            Assertions.assertDoesNotThrow(() -> admin.deleteTopics(Collections.singleton(topic)).all().get());
+        try (Admin admin = Admin.create(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
+            Assertions.assertDoesNotThrow(() -> admin.deleteTopics(Set.of(topic)).all().get());
         }
     }
 
     private void removeConsumer(Set<String> groupIds) {
-        try (Admin admin = Admin.create(Collections.singletonMap(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
+        try (Admin admin = Admin.create(Map.of(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clusterInstance.bootstrapServers()))) {
             Assertions.assertDoesNotThrow(() -> admin.deleteConsumerGroups(groupIds).all().get());
         }
     }
@@ -603,7 +599,7 @@ public class ListConsumerGroupTest {
             // Parse the header if one is expected.
             if (!expectedHeader.isEmpty()) {
                 if (lines.length == 0) return false;
-                List<String> header = Arrays.stream(lines[index++].split("\\s+")).collect(Collectors.toList());
+                List<String> header = Arrays.stream(lines[index++].split("\\s+")).toList();
                 if (!expectedHeader.equals(header)) {
                     return false;
                 }
@@ -627,7 +623,7 @@ class ListConsumerGroupUnitTest {
     @Test
     public void testConsumerGroupStatesFromString() {
         Set<GroupState> result = ConsumerGroupCommand.groupStatesFromString("Stable");
-        Assertions.assertEquals(ListConsumerGroupTest.set(Collections.singleton(GroupState.STABLE)), result);
+        Assertions.assertEquals(ListConsumerGroupTest.set(Set.of(GroupState.STABLE)), result);
 
         result = ConsumerGroupCommand.groupStatesFromString("Stable, PreparingRebalance");
         Assertions.assertEquals(ListConsumerGroupTest.set(Arrays.asList(GroupState.STABLE, GroupState.PREPARING_REBALANCE)), result);
@@ -636,7 +632,7 @@ class ListConsumerGroupUnitTest {
         Assertions.assertEquals(ListConsumerGroupTest.set(Arrays.asList(GroupState.DEAD, GroupState.COMPLETING_REBALANCE)), result);
 
         result = ConsumerGroupCommand.groupStatesFromString("stable");
-        Assertions.assertEquals(ListConsumerGroupTest.set(Collections.singletonList(GroupState.STABLE)), result);
+        Assertions.assertEquals(ListConsumerGroupTest.set(List.of(GroupState.STABLE)), result);
 
         result = ConsumerGroupCommand.groupStatesFromString("stable, assigning");
         Assertions.assertEquals(ListConsumerGroupTest.set(Arrays.asList(GroupState.STABLE, GroupState.ASSIGNING)), result);
@@ -654,7 +650,7 @@ class ListConsumerGroupUnitTest {
     @Test
     public void testConsumerGroupTypesFromString() {
         Set<GroupType> result = ConsumerGroupCommand.consumerGroupTypesFromString("consumer");
-        Assertions.assertEquals(ListConsumerGroupTest.set(Collections.singleton(GroupType.CONSUMER)), result);
+        Assertions.assertEquals(ListConsumerGroupTest.set(Set.of(GroupType.CONSUMER)), result);
 
         result = ConsumerGroupCommand.consumerGroupTypesFromString("consumer, classic");
         Assertions.assertEquals(ListConsumerGroupTest.set(Arrays.asList(GroupType.CONSUMER, GroupType.CLASSIC)), result);

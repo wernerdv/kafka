@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -143,12 +144,12 @@ public class ReassignPartitionsUnitTest {
             new TopicPartitionInfo(1, b.get(1),
                 asList(b.get(1), b.get(2), b.get(3)),
                 asList(b.get(1), b.get(2), b.get(3)))
-        ), Collections.emptyMap());
+        ), Map.of());
         adminClient.addTopic(false, "bar", asList(
             new TopicPartitionInfo(0, b.get(2),
                 asList(b.get(2), b.get(3), b.get(0)),
                 asList(b.get(2), b.get(3), b.get(0)))
-        ), Collections.emptyMap());
+        ), Map.of());
     }
 
     @Test
@@ -184,7 +185,7 @@ public class ReassignPartitionsUnitTest {
 
             // Cancel the reassignment and test findPartitionReassignmentStates again.
             Map<TopicPartition, Throwable> cancelResult = cancelPartitionReassignments(adminClient,
-                new HashSet<>(asList(new TopicPartition("foo", 0), new TopicPartition("quux", 2))));
+                Set.of(new TopicPartition("foo", 0), new TopicPartition("quux", 2)));
 
             assertEquals(1, cancelResult.size());
             assertEquals(UnknownTopicOrPartitionException.class, cancelResult.get(new TopicPartition("quux", 2)).getClass());
@@ -223,7 +224,7 @@ public class ReassignPartitionsUnitTest {
                     new TopicPartitionInfo(0, b.get(2),
                         asList(b.get(1), b.get(2), b.get(3)),
                         asList(b.get(1), b.get(2), b.get(3)))),
-                Collections.emptyMap());
+                Map.of());
 
             Map<TopicPartitionReplica, String> replicaAssignment = new HashMap<>();
 
@@ -593,7 +594,7 @@ public class ReassignPartitionsUnitTest {
                 "[{\"topic\":\"foo\",\"partition\":0,\"replicas\":[1,2,3],\"log_dirs\":[\"/tmp/a\",\"/tmp/b\",\"/tmp/c\"]}" +
                 "]}");
 
-        assertEquals(Collections.singletonMap(new TopicPartition("foo", 0), asList(1, 2, 3)), actual.getKey());
+        assertEquals(Map.of(new TopicPartition("foo", 0), asList(1, 2, 3)), actual.getKey());
         assertEquals(replicaAssignment, actual.getValue());
     }
 
@@ -711,7 +712,7 @@ public class ReassignPartitionsUnitTest {
 
             modifyTopicThrottles(adminClient,
                 leaderThrottles,
-                Collections.singletonMap("bar", "followerBar"));
+                Map.of("bar", "followerBar"));
             List<ConfigResource> topics = Stream.of("bar", "foo").map(
                 id -> new ConfigResource(ConfigResource.Type.TOPIC, id)).collect(Collectors.toList());
             Map<ConfigResource, Config> results = adminClient.describeConfigs(topics).all().get();
@@ -747,7 +748,7 @@ public class ReassignPartitionsUnitTest {
             assignment.put(new TopicPartitionReplica("quux", 1, 0), "/tmp/kafka-logs1");
 
             assertEquals(
-                new HashSet<>(asList(new TopicPartitionReplica("foo", 0, 0))),
+                Set.of(new TopicPartitionReplica("foo", 0, 0)),
                 alterReplicaLogDirs(adminClient, assignment)
             );
         }

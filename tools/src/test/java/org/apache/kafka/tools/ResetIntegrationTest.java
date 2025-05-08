@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Timeout;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -72,7 +71,7 @@ public class ResetIntegrationTest extends AbstractResetIntegrationTest {
     }
 
     @BeforeAll
-    public static void startCluster() throws IOException {
+    public static void startCluster() {
         CLUSTER.start();
     }
 

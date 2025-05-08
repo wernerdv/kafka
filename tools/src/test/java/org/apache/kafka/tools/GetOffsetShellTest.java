@@ -45,7 +45,6 @@ import org.apache.kafka.test.TestUtils;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ public class GetOffsetShellTest {
     }
 
     private void setUp() {
-        setupTopics(this::getTopicName, Collections.emptyMap());
+        setupTopics(this::getTopicName, Map.of());
         sendProducerRecords(this::getTopicName);
     }
 
@@ -138,7 +137,7 @@ public class GetOffsetShellTest {
         serverProperties.put(ServerLogConfigs.LOG_INITIAL_TASK_DELAY_MS_CONFIG, "100");
         serverProperties.put(RemoteLogManagerConfig.REMOTE_LOG_METADATA_MANAGER_LISTENER_NAME_PROP, "EXTERNAL");
 
-        return Collections.singletonList(
+        return List.of(
                 ClusterConfig.defaultBuilder()
                         .setTypes(Stream.of(KRAFT, CO_KRAFT).collect(Collectors.toSet()))
                         .setServerProperties(serverProperties)
@@ -352,7 +351,7 @@ public class GetOffsetShellTest {
             // test topics disable remote log storage
             // as remote log not enabled, broker return unknown offset for each topic partition and these
             // unknown offsets are ignored by GetOffsetShell hence we have empty result here.
-            assertEquals(Collections.emptyList(),
+            assertEquals(List.of(),
                     executeAndParse("--topic-partitions", "topic\\d+:0", "--time", time));
 
             // test topics enable remote log storage
@@ -392,7 +391,7 @@ public class GetOffsetShellTest {
 
         List<Row> offsets = executeAndParse("--topic-partitions", "topic.*", "--time", time);
 
-        assertEquals(new ArrayList<Row>(), offsets);
+        assertEquals(List.of(), offsets);
     }
 
     @ClusterTest
@@ -418,7 +417,7 @@ public class GetOffsetShellTest {
 
         List<Row> offsets = executeAndParse("--topic-partitions", "__.*:0");
 
-        assertEquals(Arrays.asList(new Row("__consumer_offsets", 0, 0L)), offsets);
+        assertEquals(List.of(new Row("__consumer_offsets", 0, 0L)), offsets);
     }
 
     @ClusterTest
@@ -481,14 +480,6 @@ public class GetOffsetShellTest {
         }
 
         assertEquals(1, exitStatus[0]);
-    }
-
-    private List<Row> expectedOffsetsWithInternal() {
-        List<Row> consOffsets = IntStream.range(0, 4)
-                .mapToObj(i -> new Row("__consumer_offsets", i, 0L))
-                .collect(Collectors.toList());
-
-        return Stream.concat(consOffsets.stream(), expectedTestTopicOffsets().stream()).collect(Collectors.toList());
     }
 
     private List<Row> expectedTestTopicOffsets() {

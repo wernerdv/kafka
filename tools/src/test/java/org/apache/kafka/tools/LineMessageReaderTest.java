@@ -25,7 +25,6 @@ import org.apache.kafka.tools.api.RecordReader;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -33,7 +32,6 @@ import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.apache.kafka.common.utils.Utils.propsToStringMap;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +65,7 @@ public class LineMessageReaderTest {
 
     @Test
     public void testMinimalValidInputWithHeaderKeyAndValue() {
-        runTest(defaultTestProps(), ":\t\t", record("", "", singletonList(new RecordHeader("", "".getBytes(UTF_8)))));
+        runTest(defaultTestProps(), ":\t\t", record("", "", List.of(new RecordHeader("", "".getBytes(UTF_8)))));
     }
 
     @Test
@@ -105,7 +103,7 @@ public class LineMessageReaderTest {
         Properties props = defaultTestProps();
         props.put("parse.key", "false");
 
-        runTest(props, input, record(null, "value", singletonList(new RecordHeader("headerKey", "headerValue".getBytes(UTF_8)))));
+        runTest(props, input, record(null, "value", List.of(new RecordHeader("headerKey", "headerValue".getBytes(UTF_8)))));
     }
 
     @Test
@@ -140,7 +138,7 @@ public class LineMessageReaderTest {
         ProducerRecord<String, String> record1 = record(
                 "key1",
                 "value1",
-                singletonList(new RecordHeader("headerKey1.0", "headerValue1.0".getBytes(UTF_8)))
+                List.of(new RecordHeader("headerKey1.0", "headerValue1.0".getBytes(UTF_8)))
         );
 
         runTest(props, input, record0, record1);
@@ -208,7 +206,7 @@ public class LineMessageReaderTest {
         props.put("ignore.error", "true");
 
         ProducerRecord<String, String> validRecord = record("key0", "value0",
-                singletonList(new RecordHeader("headerKey0.0", "headerValue0.0".getBytes(UTF_8))));
+                List.of(new RecordHeader("headerKey0.0", "headerValue0.0".getBytes(UTF_8))));
 
         ProducerRecord<String, String> missingHeaderDelimiter = record(
                 null,
@@ -222,13 +220,13 @@ public class LineMessageReaderTest {
         ProducerRecord<String, String> missingKeyDelimiter = record(
                 null,
                 "key2[MISSING-KEY-DELIMITER]value2",
-                singletonList(new RecordHeader("headerKey2.0", "headerValue2.0".getBytes(UTF_8)))
+                List.of(new RecordHeader("headerKey2.0", "headerValue2.0".getBytes(UTF_8)))
         );
 
         ProducerRecord<String, String> missingKeyHeaderDelimiter = record(
                 null,
                 "headerKey3.0:headerValue3.0[MISSING-HEADER-DELIMITER]key3[MISSING-KEY-DELIMITER]value3",
-                Collections.emptyList()
+                List.of()
         );
 
         runTest(props, input, validRecord, missingHeaderDelimiter, missingKeyDelimiter, missingKeyHeaderDelimiter);
@@ -241,7 +239,7 @@ public class LineMessageReaderTest {
         Properties props = defaultTestProps();
         props.put("ignore.error", "true");
 
-        ProducerRecord<String, String> expected = record("key0", "value0", singletonList(new RecordHeader("key-val", null)));
+        ProducerRecord<String, String> expected = record("key0", "value0", List.of(new RecordHeader("key-val", null)));
 
         runTest(props, input, expected);
     }
@@ -370,7 +368,7 @@ public class LineMessageReaderTest {
     }
 
     @SafeVarargs
-    private final void runTest(Properties props, String input, ProducerRecord<String, String>... expectedRecords) {
+    private void runTest(Properties props, String input, ProducerRecord<String, String>... expectedRecords) {
         RecordReader lineReader = new LineMessageReader();
         lineReader.configure(propsToStringMap(props));
         Iterator<ProducerRecord<byte[], byte[]>> iter = lineReader.readRecords(new ByteArrayInputStream(input.getBytes()));
