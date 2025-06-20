@@ -254,7 +254,7 @@ public class JmxTool {
         for (ObjectName objectName : objectNames) {
             MBeanInfo beanInfo = conn.getMBeanInfo(objectName);
             AttributeList attributes = conn.getAttributes(objectName,
-                    Arrays.stream(beanInfo.getAttributes()).map(a -> a.getName()).toArray(String[]::new));
+                    Arrays.stream(beanInfo.getAttributes()).map(MBeanFeatureInfo::getName).toArray(String[]::new));
             for (Attribute attribute : attributes.asList()) {
                 if (attributesInclude.isPresent()) {
                     if (Arrays.asList(attributesInclude.get()).contains(attribute.getName())) {

@@ -102,7 +102,7 @@ public class LineMessageReader implements RecordReader {
 
     @Override
     public Iterator<ProducerRecord<byte[], byte[]>> readRecords(InputStream inputStream) {
-        return new Iterator<ProducerRecord<byte[], byte[]>>() {
+        return new Iterator<>() {
             private final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             private ProducerRecord<byte[], byte[]> current;
 

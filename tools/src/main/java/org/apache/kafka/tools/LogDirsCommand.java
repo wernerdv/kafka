@@ -159,7 +159,6 @@ public class LogDirsCommand {
     static class LogDirsCommandOptions extends CommandDefaultOptions {
         private final OptionSpec<String> bootstrapServerOpt;
         private final OptionSpec<String> commandConfigOpt;
-        private final OptionSpecBuilder describeOpt;
         private final OptionSpec<String> topicListOpt;
         private final OptionSpec<String> brokerListOpt;
 
@@ -174,7 +173,7 @@ public class LogDirsCommand {
                     .withRequiredArg()
                     .describedAs("Admin client property file")
                     .ofType(String.class);
-            describeOpt = parser.accepts("describe", "Describe the specified log directories on the specified brokers.");
+            OptionSpecBuilder describeOpt = parser.accepts("describe", "Describe the specified log directories on the specified brokers.");
             topicListOpt = parser.accepts("topic-list", "The list of topics to be queried in the form \"topic1,topic2,topic3\". " +
                             "All topics will be queried if no topic list is specified")
                     .withRequiredArg()

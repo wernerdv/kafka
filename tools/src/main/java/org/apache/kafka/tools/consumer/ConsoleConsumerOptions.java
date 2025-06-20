@@ -187,8 +187,8 @@ public final class ConsoleConsumerOptions extends CommandDefaultOptions {
 
     private void checkRequiredArgs() {
         List<Optional<String>> topicOrFilterArgs = new ArrayList<>(Arrays.asList(topicArg(), includedTopicsArg()));
-        topicOrFilterArgs.removeIf(arg -> arg.isEmpty());
-        // user need to specify value for either --topic or --include options)
+        topicOrFilterArgs.removeIf(Optional::isEmpty);
+        // user need to specify value for either --topic or --include options
         if (topicOrFilterArgs.size() != 1) {
             CommandLineUtils.printUsageAndExit(parser, "Exactly one of --include/--topic is required. ");
         }

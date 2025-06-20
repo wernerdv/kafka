@@ -62,7 +62,7 @@ public class DelegationTokenCommandTest {
         assertEquals(Collections.singletonList(token2), tokens);
 
         //test renewing tokens
-        Long expiryTimestamp = DelegationTokenCommand.renewToken(adminClient, getRenewOpts(token1.hmacAsBase64String()));
+        long expiryTimestamp = DelegationTokenCommand.renewToken(adminClient, getRenewOpts(token1.hmacAsBase64String()));
         DelegationToken renewedToken = DelegationTokenCommand.describeToken(adminClient, getDescribeOpts(renewer1)).get(0);
         assertEquals(expiryTimestamp, renewedToken.tokenInfo().expiryTimestamp());
 

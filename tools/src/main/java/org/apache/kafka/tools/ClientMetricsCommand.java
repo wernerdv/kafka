@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -91,11 +92,7 @@ public class ClientMetricsCommand {
             }
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null) {
-                printException(cause);
-            } else {
-                printException(e);
-            }
+            printException(Objects.requireNonNullElse(cause, e));
             exitCode = 1;
         } catch (Throwable t) {
             printException(t);
@@ -282,7 +279,7 @@ public class ClientMetricsCommand {
             checkArgs();
         }
 
-        public Boolean has(OptionSpec<?> builder) {
+        public boolean has(OptionSpec<?> builder) {
             return options.has(builder);
         }
 

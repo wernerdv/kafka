@@ -51,9 +51,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.re2j.Pattern;
 import com.google.re2j.PatternSyntaxException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
@@ -82,8 +79,6 @@ import joptsimple.OptionException;
 import joptsimple.OptionSpec;
 
 public class ConsumerGroupCommand {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerGroupCommand.class);
-
     static final String MISSING_COLUMN_VALUE = "-";
 
     public static void main(String[] args) {

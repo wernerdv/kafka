@@ -595,7 +595,7 @@ public class AclCommand {
             List<PatternType> values = Arrays.asList(PatternType.values());
             List<PatternType> filteredValues = values.stream()
                     .filter(type -> type != PatternType.UNKNOWN)
-                    .collect(Collectors.toList());
+                    .toList();
             return filteredValues.stream()
                     .map(Object::toString)
                     .collect(Collectors.joining("|"));

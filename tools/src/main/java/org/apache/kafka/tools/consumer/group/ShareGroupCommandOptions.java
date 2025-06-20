@@ -19,9 +19,6 @@ package org.apache.kafka.tools.consumer.group;
 import org.apache.kafka.server.util.CommandDefaultOptions;
 import org.apache.kafka.server.util.CommandLineUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -33,8 +30,6 @@ import joptsimple.OptionSpec;
 import static org.apache.kafka.tools.ToolsUtils.minus;
 
 public class ShareGroupCommandOptions extends CommandDefaultOptions {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShareGroupCommandOptions.class);
-
     private static final String BOOTSTRAP_SERVER_DOC = "REQUIRED: The server(s) to connect to.";
     private static final String GROUP_DOC = "The share group we wish to act on.";
     private static final String TOPIC_DOC = "The topic whose offset information should be deleted or included in the reset offset process. " +

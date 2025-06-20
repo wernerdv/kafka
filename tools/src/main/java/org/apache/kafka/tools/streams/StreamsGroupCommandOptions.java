@@ -218,7 +218,7 @@ public class StreamsGroupCommandOptions extends CommandDefaultOptions {
             checkDescribeArgs();
         } else {
             if (options.has(timeoutMsOpt))
-                LOGGER.debug("Option " + timeoutMsOpt + " is applicable only when " + describeOpt + " is used.");
+                LOGGER.debug("Option {} is applicable only when {} is used.", timeoutMsOpt, describeOpt);
         }
 
         if (options.has(deleteOpt)) {

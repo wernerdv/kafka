@@ -264,7 +264,7 @@ public class GetOffsetShell {
         }
     }
 
-    // visible for tseting
+    // visible for testing
     static OffsetSpec parseOffsetSpec(String listOffsetsTimestamp) throws TerseException {
         switch (listOffsetsTimestamp) {
             case "earliest":

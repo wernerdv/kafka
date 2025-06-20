@@ -234,7 +234,7 @@ public class ConsumerGroupCommandOptions extends CommandDefaultOptions {
                     "Option " + describeOpt + " does not take a value for " + stateOpt);
         } else {
             if (options.has(timeoutMsOpt))
-                LOGGER.debug("Option " + timeoutMsOpt + " is applicable only when " + describeOpt + " is used.");
+                LOGGER.debug("Option {} is applicable only when {} is used.", timeoutMsOpt, describeOpt);
         }
 
         if (options.has(deleteOpt)) {
