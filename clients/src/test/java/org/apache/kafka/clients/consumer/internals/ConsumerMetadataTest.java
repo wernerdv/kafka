@@ -87,7 +87,7 @@ public class ConsumerMetadataTest {
         assertTrue(builder.isAllTopics());
 
         List<MetadataResponse.TopicMetadata> topics = new ArrayList<>();
-        topics.add(topicMetadata("__consumer_offsets", true));
+        topics.add(topicMetadata(Topic.GROUP_METADATA_TOPIC_NAME, true));
         topics.add(topicMetadata("__matching_topic", false));
         topics.add(topicMetadata("non_matching_topic", false));
 
@@ -96,7 +96,7 @@ public class ConsumerMetadataTest {
         metadata.updateWithCurrentRequestVersion(response, false, time.milliseconds());
 
         if (includeInternalTopics)
-            assertEquals(Set.of("__matching_topic", "__consumer_offsets"), metadata.fetch().topics());
+            assertEquals(Set.of("__matching_topic", Topic.GROUP_METADATA_TOPIC_NAME), metadata.fetch().topics());
         else
             assertEquals(Collections.singleton("__matching_topic"), metadata.fetch().topics());
     }
@@ -178,23 +178,23 @@ public class ConsumerMetadataTest {
         subscription.assignFromUser(Set.of(
                 new TopicPartition("foo", 0),
                 new TopicPartition("bar", 0),
-                new TopicPartition("__consumer_offsets", 0)));
-        testBasicSubscription(Set.of("foo", "bar"), Set.of("__consumer_offsets"));
+                new TopicPartition(Topic.GROUP_METADATA_TOPIC_NAME, 0)));
+        testBasicSubscription(Set.of("foo", "bar"), Set.of(Topic.GROUP_METADATA_TOPIC_NAME));
 
         subscription.assignFromUser(Set.of(
                 new TopicPartition("baz", 0),
-                new TopicPartition("__consumer_offsets", 0)));
-        testBasicSubscription(Set.of("baz"), Set.of("__consumer_offsets"));
+                new TopicPartition(Topic.GROUP_METADATA_TOPIC_NAME, 0)));
+        testBasicSubscription(Set.of("baz"), Set.of(Topic.GROUP_METADATA_TOPIC_NAME));
     }
 
     @Test
     public void testNormalSubscription() {
-        subscription.subscribe(Set.of("foo", "bar", "__consumer_offsets"), Optional.empty());
-        subscription.groupSubscribe(Set.of("baz", "foo", "bar", "__consumer_offsets"));
-        testBasicSubscription(Set.of("foo", "bar", "baz"), Set.of("__consumer_offsets"));
+        subscription.subscribe(Set.of("foo", "bar", Topic.GROUP_METADATA_TOPIC_NAME), Optional.empty());
+        subscription.groupSubscribe(Set.of("baz", "foo", "bar", Topic.GROUP_METADATA_TOPIC_NAME));
+        testBasicSubscription(Set.of("foo", "bar", "baz"), Set.of(Topic.GROUP_METADATA_TOPIC_NAME));
 
         subscription.resetGroupSubscription();
-        testBasicSubscription(Set.of("foo", "bar"), Set.of("__consumer_offsets"));
+        testBasicSubscription(Set.of("foo", "bar"), Set.of(Topic.GROUP_METADATA_TOPIC_NAME));
     }
 
     @Test
